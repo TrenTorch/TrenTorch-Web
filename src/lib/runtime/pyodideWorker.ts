@@ -74,6 +74,15 @@ function toBase64(str: string): string {
 }
 
 self.onmessage = async (e: MessageEvent) => {
+	// Origin verification — only trust messages from the same origin as this worker.
+	// `'null'` covers blob: and data: URLs that some bundlers use in development.
+	const trustedOrigins = new Set([self.location.origin, 'null']);
+	const messageOrigin = typeof e.origin === 'string' ? e.origin : '';
+	if (messageOrigin && !trustedOrigins.has(messageOrigin)) {
+		self.postMessage({ type: 'error', error: `Untrusted message origin: ${messageOrigin}` });
+		return;
+	}
+
 	const { id, action, code, testHarnessCode, moduleId } = e.data;
 
 	try {

@@ -109,7 +109,9 @@
 											{/if}
 										</div>
 										<div>
-											<div class="font-medium {isCurrent ? 'text-foreground' : 'text-foreground/80'}">
+											<div
+												class="font-medium {isCurrent ? 'text-foreground' : 'text-foreground/80'}"
+											>
 												{mod.title}
 											</div>
 											<div class="text-[10px] text-muted-foreground">

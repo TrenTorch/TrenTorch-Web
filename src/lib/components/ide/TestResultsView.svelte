@@ -107,7 +107,9 @@
 				{/each}
 			</div>
 		{:else}
-			<div class="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
+			<div
+				class="flex h-full flex-col items-center justify-center text-center text-muted-foreground"
+			>
 				<ShieldCheck class="mb-2 size-8 stroke-[1.5]" />
 				<p class="italic">Click "Run Tests" to test your implementation</p>
 			</div>

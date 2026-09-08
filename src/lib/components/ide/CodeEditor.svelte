@@ -84,8 +84,20 @@
 		editorView?.destroy();
 
 		const runKeyBinding = keymap.of([
-			{ key: 'Mod-Enter', run: () => { onRun(); return true; } },
-			{ key: 'Shift-Enter', run: () => { onRun(); return true; } }
+			{
+				key: 'Mod-Enter',
+				run: () => {
+					onRun();
+					return true;
+				}
+			},
+			{
+				key: 'Shift-Enter',
+				run: () => {
+					onRun();
+					return true;
+				}
+			}
 		]);
 
 		const updateListener = EditorView.updateListener.of((update) => {
