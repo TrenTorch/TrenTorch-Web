@@ -8,7 +8,7 @@ Learn PyTorch and Frontier ML by building your own PyTorch, in the browser.
 
 The web version of [TrenTorch](https://github.com/TrenTorch/TrenTorch): the same from-scratch, module-by-module curriculum, without a local install.
 
-Built with [SvelteKit](https://svelte.dev/docs/kit).
+Built with [SvelteKit](https://svelte.dev/docs/kit). Watched over by the same governance suite as [TrenTorch/TrenTorch](https://github.com/TrenTorch/TrenTorch): CodeQL, Scorecard, AI co-author checks, semantic PR titles.
 
 ## Development
 
