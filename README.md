@@ -45,3 +45,4 @@ npx sv@0.17.0 create --template minimal --types ts --add prettier eslint tailwin
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
+
