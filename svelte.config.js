@@ -10,7 +10,9 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const config = {
 	preprocess: vitePreprocess(),
 	kit: {
-		adapter: adapter()
+		adapter: adapter({
+			runtime: 'nodejs22.x'
+		})
 	},
 	// Passed through to vite-plugin-svelte. Has to live here rather than as
 	// an inline option to sveltekit() in vite.config.ts: passing any option

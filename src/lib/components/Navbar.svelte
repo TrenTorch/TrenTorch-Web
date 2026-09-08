@@ -11,6 +11,7 @@
 
 	const routes = [
 		{ href: resolve('/'), label: 'Home' },
+		{ href: resolve('/ide'), label: 'Web IDE' },
 		{ href: resolve('/docs'), label: 'Docs' },
 		{ href: resolve('/wiki'), label: 'Wiki' }
 	];
