@@ -1,4 +1,16 @@
-export type ModulePartId = 'foundations' | 'vision' | 'nlp' | 'systems';
+export type ModulePartId =
+	| 'foundations'
+	| 'vision'
+	| 'nlp'
+	| 'systems'
+	// New atomized curriculum sections (data/<section>/), appended
+	// rather than replacing the legacy four above -- the old 20-module
+	// curriculum keeps using those, these are additive.
+	| 'classical-ml'
+	| 'deep-learning'
+	| 'llm'
+	| 'vision-transformer'
+	| 'systems-optimization';
 
 export interface ModulePart {
 	id: ModulePartId;
@@ -26,7 +38,19 @@ export interface ModuleMetadata {
 	guideMarkdown: string;
 	starterCode: string;
 	solutionCode: string;
+	// Real pytest source for the legacy 20 modules AND the new atomized
+	// curriculum alike -- pyodideWorker.ts installs pytest via micropip
+	// and runs this file directly. No run_tests()-function convention
+	// needed; a plain `def test_*():` + `assert` file works as-is.
 	testHarnessCode: string;
+	// Atomized curriculum only: earlier questions in the same track,
+	// cleaned of dev-only cross-question loading, concatenated in
+	// order. Written into solution.py ahead of the student's own
+	// current-question code so later questions can call earlier ones'
+	// functions directly, exactly like a real student session
+	// accumulating solved modules. Undefined for the legacy 20 modules
+	// (each of those is already self-contained).
+	priorSolutionsCode?: string;
 	testCases: TestCase[];
 	hints: string[];
 }

@@ -76,7 +76,12 @@
 		activeRightTab = 'tests';
 		mobileActiveTab = 'output';
 		try {
-			await pyodideService.runTests(userCode, activeModule.testHarnessCode, activeModule.id);
+			await pyodideService.runTests(
+				userCode,
+				activeModule.testHarnessCode,
+				activeModule.id,
+				activeModule.priorSolutionsCode
+			);
 		} catch (e) {
 			console.error('Test run failed', e);
 		}

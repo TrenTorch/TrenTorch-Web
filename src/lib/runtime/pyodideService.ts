@@ -142,7 +142,8 @@ class PyodideService {
 	public async runTests(
 		code: string,
 		testHarnessCode: string,
-		moduleId: string
+		moduleId: string,
+		priorSolutionsCode?: string
 	): Promise<SubmissionResult> {
 		this.init();
 		this.isRunning.set(true);
@@ -175,6 +176,7 @@ class PyodideService {
 				action: 'test',
 				code,
 				testHarnessCode,
+				priorSolutionsCode,
 				moduleId
 			});
 		});

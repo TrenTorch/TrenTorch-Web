@@ -24,6 +24,17 @@ async function initializePyodide(): Promise<any> {
 		// Pre-load numpy for TrenTorch
 		await pyodide.loadPackage(['numpy']);
 
+		// pytest itself and its dependencies (pluggy, iniconfig, packaging)
+		// are pure Python, so a real pytest install works fine under
+		// Pyodide via micropip -- verified directly: installs cleanly and
+		// pytest.main() reports real per-test pass/fail with real
+		// tracebacks. New (atomized) testHarnessCode is a plain pytest
+		// file; the original 20 modules' run_tests()-function harnesses
+		// still work too (see isLegacyHarness below) -- this is additive.
+		await pyodide.loadPackage(['micropip']);
+		const micropip = pyodide.pyimport('micropip');
+		await micropip.install('pytest');
+
 		// Setup standard capture harness in python
 		await pyodide.runPythonAsync(`
 import sys
@@ -32,6 +43,7 @@ import traceback
 import json
 import base64
 import numpy as np
+import pytest
 
 class OutputCapture:
     def __init__(self):
@@ -56,6 +68,21 @@ class OutputCapture:
 
     def get_stderr(self):
         return self.stderr.getvalue()
+
+
+class _PytestResultCollector:
+    """Collects per-test pass/fail into the same {name, passed, error}
+    shape the app already expects, instead of pytest's own CLI report."""
+    def __init__(self):
+        self.results = []
+
+    def pytest_runtest_logreport(self, report):
+        if report.when == 'call':
+            self.results.append({
+                "name": report.nodeid,
+                "passed": bool(report.passed),
+                "error": str(report.longrepr) if report.failed else None,
+            })
 `);
 
 		self.postMessage({ type: 'status', status: 'ready' });
@@ -83,7 +110,7 @@ self.onmessage = async (e: MessageEvent) => {
 		return;
 	}
 
-	const { id, action, code, testHarnessCode, moduleId } = e.data;
+	const { id, action, code, testHarnessCode, priorSolutionsCode, moduleId } = e.data;
 
 	try {
 		const py = await initializePyodide();
@@ -136,29 +163,78 @@ json.dumps(__run_user_code())
 		if (action === 'test') {
 			self.postMessage({ type: 'status', status: 'testing' });
 			const startTime = performance.now();
-			const codeB64 = toBase64(code || '');
+			// Prior questions in the same track (real oracle solutions,
+			// already cleaned of dev-only cross-question loading) go
+			// ahead of the student's own current-question code, so
+			// solution.py ends up with everything this question's tests
+			// might need to import -- same idea as a real student session
+			// that already solved the earlier questions. Undefined/empty
+			// for the legacy 20 modules and for a track's first question.
+			const solutionSource = (priorSolutionsCode ? priorSolutionsCode + '\n\n' : '') + (code || '');
+			const solutionB64 = toBase64(solutionSource);
 			const testB64 = toBase64(testHarnessCode || '');
 
-			const testRunnerScript = `
+			// The original 20 modules' testHarnessCode predates this change
+			// and defines its own run_tests() returning a plain list --
+			// no `def test_*():` functions, so pytest would collect zero
+			// tests from them and silently report every one as failing.
+			// Detecting the old convention by content (rather than
+			// touching all 20 modules' harness strings) keeps this
+			// backward compatible: legacy modules keep working exactly
+			// as before, new atomized questions run through real pytest.
+			const isLegacyHarness = /^def run_tests\(/m.test(testHarnessCode || '');
+
+			const testRunnerScript = isLegacyHarness
+				? `
 def __run_module_tests():
     with OutputCapture() as cap:
         exec_globals = {"__name__": "__main__"}
         results = []
         raw_error = None
         try:
-            # 1. Execute student code
-            raw_code = base64.b64decode("${codeB64}").decode("utf-8")
+            raw_code = base64.b64decode("${solutionB64}").decode("utf-8")
             exec(raw_code, exec_globals)
-            
-            # 2. Execute test harness
+
             raw_test = base64.b64decode("${testB64}").decode("utf-8")
             exec(raw_test, exec_globals)
-            
-            # 3. Call run_tests()
+
             if "run_tests" in exec_globals and callable(exec_globals["run_tests"]):
                 results = exec_globals["run_tests"]()
             else:
                 raw_error = "Test harness does not contain a run_tests() function."
+        except Exception as e:
+            raw_error = traceback.format_exc()
+
+        return {
+            "stdout": cap.get_stdout(),
+            "stderr": cap.get_stderr(),
+            "error": raw_error,
+            "results": results
+        }
+
+json.dumps(__run_module_tests())
+`
+				: `
+def __run_module_tests():
+    with OutputCapture() as cap:
+        results = []
+        raw_error = None
+        try:
+            # Fresh files every run, and drop any cached import of a
+            # previous run's "solution"/"tests" modules -- Python's
+            # import cache would otherwise silently keep serving a
+            # prior question's (or a prior attempt's) stale code.
+            sys.modules.pop("solution", None)
+            sys.modules.pop("tests", None)
+
+            with open("solution.py", "w") as f:
+                f.write(base64.b64decode("${solutionB64}").decode("utf-8"))
+            with open("tests.py", "w") as f:
+                f.write(base64.b64decode("${testB64}").decode("utf-8"))
+
+            collector = _PytestResultCollector()
+            pytest.main(["tests.py", "-q"], plugins=[collector])
+            results = collector.results
         except Exception as e:
             raw_error = traceback.format_exc()
 
