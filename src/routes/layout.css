@@ -1,6 +1,24 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
+/* Self-hosted, latin-subset variable fonts (one file per family covers
+   every weight). Imported through Vite from src/lib/fonts so each gets a
+   content-hashed name under /_app/immutable and a 1-year immutable
+   Cache-Control -- fetched once per browser, then zero egress on every
+   later visit. `swap` so text shows immediately in the fallback. */
+@font-face {
+	font-family: 'Geist';
+	src: url('../lib/fonts/geist-latin.woff2') format('woff2');
+	font-weight: 100 900;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Geist Mono';
+	src: url('../lib/fonts/geist-mono-latin.woff2') format('woff2');
+	font-weight: 100 900;
+	font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -65,6 +83,27 @@
 @layer base {
 	* {
 		@apply border-border outline-ring/50;
+		/* Thin, theme-colored scrollbars everywhere instead of the browser's
+		 * default (a wide, flat-gray bar that reads as a UI bug against this
+		 * site's black-and-white palette, dark mode especially). Firefox
+		 * reads the two properties below; the ::-webkit-scrollbar-* rules
+		 * further down cover Chrome/Edge/Safari. */
+		scrollbar-width: thin;
+		scrollbar-color: var(--border) transparent;
+	}
+	*::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+	*::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	*::-webkit-scrollbar-thumb {
+		background-color: var(--border);
+		border-radius: 9999px;
+	}
+	*::-webkit-scrollbar-thumb:hover {
+		background-color: var(--muted-foreground);
 	}
 	body {
 		@apply bg-background text-foreground;
@@ -81,8 +120,61 @@
 	}
 }
 
+@layer components {
+	/* One place for the rendered-markdown look in the IDE guide pane
+	 * (Description / Theory / Solution explanation), instead of the same
+	 * ~20-utility `prose ...` string repeated on every tab. Tweaks on top
+	 * of the Typography defaults: markers stay outside so wrapped list
+	 * lines hang-indent under the text (not under the number), and inline
+	 * `code` loses Typography's literal backtick pseudo-elements. */
+	.question-prose {
+		@apply prose prose-sm max-w-none leading-relaxed prose-neutral dark:prose-invert;
+	}
+	.question-prose :where(h1, h2, h3, h4) {
+		font-family: var(--font-mono);
+		color: var(--foreground);
+	}
+	.question-prose :where(p, li) {
+		color: color-mix(in oklab, var(--foreground) 82%, transparent);
+	}
+	.question-prose :where(ol, ul) {
+		padding-inline-start: 1.4em;
+	}
+	.question-prose :where(ol) {
+		list-style: decimal outside;
+	}
+	.question-prose :where(ul) {
+		list-style: disc outside;
+	}
+	.question-prose :where(li) {
+		margin-block: 0.3em;
+		padding-inline-start: 0.35em;
+	}
+	.question-prose :where(:not(pre) > code) {
+		border-radius: 0.25rem;
+		background: var(--muted);
+		padding: 0.1em 0.35em;
+		font-weight: 500;
+		color: var(--foreground);
+	}
+	.question-prose :where(:not(pre) > code)::before,
+	.question-prose :where(:not(pre) > code)::after {
+		content: none;
+	}
+	.question-prose :where(pre) {
+		border: 1px solid var(--border);
+		background: var(--secondary);
+		font-family: var(--font-mono);
+	}
+}
+
 @layer utilities {
+	/* The navbar and footer bars themselves span the full viewport width
+	 * (no wrapper caps them anymore); this class centers each bar's and
+	 * each page section's actual content within a readable max-width, so
+	 * the site fills wide screens instead of floating in a fixed box. */
 	.container {
 		@apply mx-auto px-4;
+		max-width: 96rem; /* 1536px */
 	}
 }
