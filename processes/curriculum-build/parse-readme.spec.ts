@@ -36,9 +36,9 @@ describe('parseReadme', () => {
 	});
 
 	it('throws when the frontmatter block is missing', () => {
-		expect(() => parseReadme('## Statement\nx\n## Theory\ny\n## Explanation\nz', '/fake/path')).toThrow(
-			/frontmatter/
-		);
+		expect(() =>
+			parseReadme('## Statement\nx\n## Theory\ny\n## Explanation\nz', '/fake/path')
+		).toThrow(/frontmatter/);
 	});
 
 	it('throws when a required frontmatter field is missing', () => {

@@ -40,19 +40,20 @@ describe('supabase RLS/grant regressions', () => {
 		// explicitly DROPs the old policy before creating the new one, the
 		// concatenated SQL containing a later `drop policy ... using (true)`
 		// is exactly the signal that this was fixed, not reintroduced.
-		const createdWideOpen = /create policy "Profiles are viewable by everyone"[\s\S]*?using \(true\)/.test(
-			sql
-		);
-		const droppedWideOpen = /drop policy "Profiles are viewable by everyone" on public\.profiles/.test(
-			sql
-		);
-		expect(createdWideOpen && !droppedWideOpen, 'profiles has a live using (true) SELECT policy').toBe(
-			false
-		);
+		const createdWideOpen =
+			/create policy "Profiles are viewable by everyone"[\s\S]*?using \(true\)/.test(sql);
+		const droppedWideOpen =
+			/drop policy "Profiles are viewable by everyone" on public\.profiles/.test(sql);
+		expect(
+			createdWideOpen && !droppedWideOpen,
+			'profiles has a live using (true) SELECT policy'
+		).toBe(false);
 	});
 
 	it('the current profiles SELECT policy scopes to auth.uid() = id', () => {
-		expect(sql).toMatch(/create policy "Users can view their own profile"[\s\S]*?using \(auth\.uid\(\) = id\)/);
+		expect(sql).toMatch(
+			/create policy "Users can view their own profile"[\s\S]*?using \(auth\.uid\(\) = id\)/
+		);
 	});
 
 	it('handle_new_user has no live EXECUTE grant to anon, authenticated, or public', () => {
@@ -68,14 +69,16 @@ describe('supabase RLS/grant regressions', () => {
 	});
 
 	it('every table with row level security enabled has at least one policy defined', () => {
-		const rlsEnabledTables = [...sql.matchAll(/alter table (public\.\w+) enable row level security/g)].map(
-			(m) => m[1]
-		);
+		const rlsEnabledTables = [
+			...sql.matchAll(/alter table (public\.\w+) enable row level security/g)
+		].map((m) => m[1]);
 		expect(rlsEnabledTables.length).toBeGreaterThan(0);
 		for (const table of rlsEnabledTables) {
 			const escaped = table.replace('.', '\\.');
 			const hasPolicy = new RegExp(`create policy "[^"]+"\\s*\\n?\\s*on ${escaped}`).test(sql);
-			expect(hasPolicy, `${table} has RLS enabled but no policy found in migration history`).toBe(true);
+			expect(hasPolicy, `${table} has RLS enabled but no policy found in migration history`).toBe(
+				true
+			);
 		}
 	});
 });

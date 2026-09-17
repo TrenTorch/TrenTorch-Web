@@ -1,26 +1,26 @@
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     # Actions are pinned to commit SHAs (see .github/workflows/) rather
     # than mutable tags, so this is what keeps those pins current without
     # hand-resolving new SHAs every time an action ships a security fix.
     commit-message:
-      prefix: "ci"
+      prefix: 'ci'
 
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     # "chore" (not "deps"): TrenTorch/TrenTorch hit exactly this bug --
     # the semantic-pull-request title check's allowed types don't include
     # "deps", so a "deps:" prefix fails title-check on every Dependabot PR.
     commit-message:
-      prefix: "chore"
+      prefix: 'chore'
     labels:
-      - "dependencies"
+      - 'dependencies'
     groups:
       # shadcn-svelte/bits-ui and friends bump in lockstep upstream far
       # more often than any single package here actually needs a review
@@ -28,5 +28,5 @@ updates:
       # ones for a UI-component stack this size.
       radix-ui:
         patterns:
-          - "bits-ui"
-          - "@lucide/svelte"
+          - 'bits-ui'
+          - '@lucide/svelte'

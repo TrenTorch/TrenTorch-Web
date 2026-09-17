@@ -11,7 +11,11 @@ import { isDir } from './is-dir.mjs';
 // shipped with a "Notes for the Judge / Setter" and a "This site's
 // interface" section before being caught and stripped by hand) -- this is
 // the automated guard against that mistake recurring.
-const FORBIDDEN_HEADINGS = [/notes for the judge/i, /notes for the setter/i, /this site'?s interface/i];
+const FORBIDDEN_HEADINGS = [
+	/notes for the judge/i,
+	/notes for the setter/i,
+	/this site'?s interface/i
+];
 
 const APP_DATA_ROOT = join(import.meta.dirname, '..', '..', 'data', 'app_data');
 
