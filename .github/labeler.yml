@@ -6,7 +6,7 @@ documentation:
   - changed-files:
       - any-glob-to-any-file:
           - 'README.md'
-          - 'docs/**'
+          - 'TrenTorch_Web/docs/**'
 
 github_actions:
   - changed-files:
@@ -14,11 +14,11 @@ github_actions:
 
 ui:
   - changed-files:
-      - any-glob-to-any-file: 'src/routes/**'
+      - any-glob-to-any-file: 'TrenTorch_Web/src/routes/**'
 
 lib:
   - changed-files:
-      - any-glob-to-any-file: 'src/lib/**'
+      - any-glob-to-any-file: 'TrenTorch_Web/src/lib/**'
 
 tests:
   - changed-files:
@@ -29,5 +29,5 @@ tests:
 dependencies:
   - changed-files:
       - any-glob-to-any-file:
-          - 'package.json'
-          - 'package-lock.json'
+          - 'TrenTorch_Web/package.json'
+          - 'TrenTorch_Web/package-lock.json'

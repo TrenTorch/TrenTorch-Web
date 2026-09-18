@@ -1,28 +1,11 @@
-node_modules
+# Only .github/, README.md, LICENSE, funding.json, and .well-known/ live
+# at this level -- GitHub-platform discovery files that have to stay at
+# the true repo root. Everything else, including this repo's own
+# build/tooling artifacts, now lives under TrenTorch_Web/ and is covered
+# by TrenTorch_Web/.gitignore instead. This file only needs to cover
+# things that can still appear at the true root regardless of that split.
 
-# Output
-.output
-.vercel
-.netlify
-.wrangler
-/.svelte-kit
-/build
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Env
-.env
-.env.*
-!.env.example
-!.env.test
-
-# Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
-
-# Python (curriculum content authoring/testing under data/)
-__pycache__/
-*.pyc
-.pytest_cache/
+# Claude Code's own session scratch/worktree directory -- a tool-local
+# artifact, not project content, and unrelated to whatever lives inside
+# TrenTorch_Web/ or any future sibling directory.
+.claude/
