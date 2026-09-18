@@ -33,16 +33,16 @@ jobs:
         with:
           filters: |
             relevant:
-              - 'platform/**'
-              - 'processes/**'
-              - 'data/**'
-              - 'supabase/**'
-              - 'static/**'
-              - 'package.json'
-              - 'package-lock.json'
-              - '.config/**'
-              - 'svelte.config.js'
-              - 'tsconfig.json'
+              - 'TrenTorch_Web/platform/**'
+              - 'TrenTorch_Web/processes/**'
+              - 'TrenTorch_Web/data/**'
+              - 'TrenTorch_Web/supabase/**'
+              - 'TrenTorch_Web/static/**'
+              - 'TrenTorch_Web/package.json'
+              - 'TrenTorch_Web/package-lock.json'
+              - 'TrenTorch_Web/.config/**'
+              - 'TrenTorch_Web/svelte.config.js'
+              - 'TrenTorch_Web/tsconfig.json'
               - '.github/workflows/ci.yml'
 
   build-and-test:
@@ -51,6 +51,12 @@ jobs:
     if: needs.changes.outputs.relevant == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    defaults:
+      run:
+        # All app code/config lives under TrenTorch_Web/ now (.github/
+        # itself didn't move -- GitHub only discovers workflows at the
+        # true repo root). Only affects `run:` steps.
+        working-directory: TrenTorch_Web
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -60,6 +66,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+          cache-dependency-path: TrenTorch_Web/package-lock.json
 
       - name: Install dependencies
         run: npm ci

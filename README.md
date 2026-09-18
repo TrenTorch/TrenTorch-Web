@@ -13,6 +13,7 @@ Built with [SvelteKit](https://svelte.dev/docs/kit).
 ## Development
 
 ```bash
+cd TrenTorch_Web
 npm install
 npm run dev -- --open
 ```
