@@ -46,3 +46,7 @@ npx sv@0.17.0 create --template minimal --types ts --add prettier eslint tailwin
 ## License
 
 [PolyForm Noncommercial License 1.0.0](LICENSE): free for personal, educational, and noncommercial use. Not licensed for commercial use.
+
+## Code of Conduct
+
+This project follows the [Contributor Covenant](CODE_OF_CONDUCT.md). Participation in issues, pull requests, and discussions is expected to stay within it.
